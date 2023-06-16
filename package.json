@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "description": "err4 for go via code generate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.79.0"
   },
