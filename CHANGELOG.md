@@ -1,9 +1,7 @@
 # Change Log
 
-All notable changes to the "err4-go" extension will be documented in this file.
+## [0.0.5] - 2023-06-16
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+#### Fix
 
-## [Unreleased]
-
-- Initial release
+- follow err4@v0.0.1 fix
