@@ -70,7 +70,7 @@ add build tags `err4`
 
 ```jsonc
 {
-  "go.buildFlags": ["-tags=err4"]
+  "go.buildTags": "err4"
 }
 ```
 
