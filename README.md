@@ -76,8 +76,6 @@ add build tags `err4`
 
 ## Known Issues
 
-- when you remove `err4` from go file, this extension will don't delete generate file `_err4.go`.
-
 ## Release Notes
 
 Users appreciate release notes as you update your extension.
