@@ -1,6 +1,11 @@
 {
   "name": "err4-go",
   "displayName": "err4-go",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shynome/err4-go-vscode"
+  },
+  "license": "MIT",
   "description": "err4 for go via code generate",
   "version": "0.0.1",
   "engines": {
@@ -13,28 +18,24 @@
     "onLanguage:go"
   ],
   "main": "./extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "err4-go.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
+  "contributes": {},
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.79.0",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
+    "@types/vscode": "^1.79.0",
+    "@vscode/test-electron": "^2.3.2",
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.1.3",
-    "@vscode/test-electron": "^2.3.2"
+    "typescript": "^5.1.3"
+  },
+  "dependencies": {
+    "@vscode/vsce": "^2.19.0"
   }
 }
