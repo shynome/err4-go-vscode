@@ -1,6 +1,7 @@
 {
   "name": "err4-go",
   "displayName": "err4-go",
+  "publisher": "lcode",
   "repository": {
     "type": "git",
     "url": "https://github.com/shynome/err4-go-vscode"
