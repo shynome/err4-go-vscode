@@ -22,6 +22,7 @@
   "contributes": {},
   "scripts": {
     "build": "go build -o err4gen .",
+    "preversion": "npm run build",
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "node ./test/runTest.js"
