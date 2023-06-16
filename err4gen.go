@@ -36,12 +36,13 @@ func main() {
 			if args.debug {
 				log.Println("ransform file", filepath)
 			}
-			b, err4file := try.To2(transpile.Transform(filepath, nil))
+			b, err4file, err := transpile.Transform(filepath, nil)
 			if !err4file {
 				return
 			}
 			p := err4path(filepath)
 			try.To(os.WriteFile(p, b.Bytes(), os.ModePerm))
+			try.To(err)
 			return
 		}(string(line))
 	}
