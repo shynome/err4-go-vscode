@@ -22,13 +22,9 @@ function activate(context) {
   let running = false;
   let startHandler = () => {
     let config = vscode.workspace.getConfiguration("go");
-    /**@type {string[]} */
-    let flags = config.get("buildFlags") || [];
-    let tagsStr = flags.filter((s) => s.startsWith("-tags="))[0];
-    if (!tagsStr) {
-      tagsStr = "-tags=";
-    }
-    let tags = tagsStr.slice("-tags=".length).split(",");
+    /**@type {string} */
+    let tagsStr = config.get("buildTags") || "";
+    let tags = tagsStr.split(",");
     if (!tags.includes("err4")) {
       // 配置已经关闭了 err4 tag, 响应配置关闭监听
       if (clear) {
