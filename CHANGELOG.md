@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.0.8] - 2023-06-19
+
+#### Change
+
+- follow err4@v0.0.4 change
+
 ## [0.0.7] - 2023-06-19
 
 #### Change
