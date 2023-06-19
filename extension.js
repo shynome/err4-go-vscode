@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require("vscode");
+const { fetch, getRandomListenAddr } = require("./utils");
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -20,7 +21,7 @@ function activate(context) {
   context.subscriptions.push(bar);
 
   let running = false;
-  let startHandler = () => {
+  let startHandler = async () => {
     let config = vscode.workspace.getConfiguration("go");
     /**@type {string} */
     let tagsStr = config.get("buildTags") || "";
@@ -38,7 +39,8 @@ function activate(context) {
     }
 
     const bin = require.resolve("./err4gen");
-    const p = require("child_process").spawn(bin);
+    const addr = await getRandomListenAddr();
+    const p = require("child_process").spawn(bin, ["-addr", addr]);
     p.on("exit", (code) => {
       if (code != 0 && !!clear) {
         clear.dispose();
@@ -53,26 +55,41 @@ function activate(context) {
     };
 
     /**
-     * @param {vscode.TextDocument} e
+     * @param {vscode.TextDocumentWillSaveEvent} e
      * @returns
      */
     function onSave(e) {
-      if (e.languageId != "go") {
+      const doc = e.document;
+      if (doc.languageId != "go") {
         return;
       }
-      if (e.isUntitled) {
+      if (doc.isUntitled) {
         return;
       }
-      if (e.fileName.endsWith("_err4.go")) {
+      if (doc.fileName.endsWith("_err4.go")) {
         return;
       }
-      if (!e.fileName.endsWith(".go")) {
+      if (!doc.fileName.endsWith(".go")) {
         return;
       }
-      p.stdin.write(e.fileName);
-      p.stdin.write("\n");
+      const transpile = () => {
+        let content = doc.getText();
+        let link = `http://${addr}${doc.fileName}`;
+        const p = fetch(link, { method: "POST", body: content }).then(
+          async (res) => {
+            if (res.status != 200) {
+              throw new Error(await res.text());
+            }
+          }
+        );
+        p.catch((err) => {
+          console.error(err);
+        });
+        return p;
+      };
+      e.waitUntil(transpile());
     }
-    let handler = vscode.workspace.onDidSaveTextDocument(onSave);
+    let handler = vscode.workspace.onWillSaveTextDocument(onSave);
 
     running = true;
     bar.show();
@@ -82,7 +99,6 @@ function activate(context) {
         bar.hide();
       },
     });
-    
   };
 
   startHandler();

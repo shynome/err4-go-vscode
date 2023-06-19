@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"flag"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -14,38 +15,40 @@ import (
 
 var args struct {
 	debug bool
+	addr  string
 }
 
 func init() {
 	flag.BoolVar(&args.debug, "debug", false, "")
+	flag.StringVar(&args.addr, "addr", "127.0.0.1:4797", "")
 }
 
 func main() {
 	flag.Parse()
 
-	r := bufio.NewReader(os.Stdin)
-	for {
-		line, _, err := r.ReadLine()
-		if err != nil {
-			log.Fatal(err)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		filepath := r.URL.Path
+		defer err2.Catch(func(err error) {
+			w.WriteHeader(500)
+			fmt.Fprintln(w, "err", err)
+		})
+		if args.debug {
+			log.Println("ransform file", filepath)
 		}
-		go func(filepath string) {
-			defer err2.Catch(func(err error) {
-				log.Println("transform file", filepath, "failed", err)
-			})
-			if args.debug {
-				log.Println("ransform file", filepath)
-			}
-			p := err4path(filepath)
-			b, err4file, err := transpile.Transform(filepath, nil)
-			if !err4file {
-				try.To(os.Remove(p))
-				return
-			}
-			try.To(os.WriteFile(p, b.Bytes(), os.ModePerm))
-			try.To(err)
+		p := err4path(filepath)
+		b, err4file, err := transpile.Transform(filepath, r.Body)
+		if err == nil && !err4file {
+			_ = os.Remove(p)
+			fmt.Fprintln(w, "removed")
 			return
-		}(string(line))
+		}
+		try.To(os.WriteFile(p, b.Bytes(), os.ModePerm))
+		try.To(err)
+		fmt.Fprintln(w, "saved")
+	})
+
+	if err := http.ListenAndServe(args.addr, nil); err != nil {
+		log.Fatalln(err)
 	}
 }
 
