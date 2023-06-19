@@ -13,11 +13,32 @@ function activate(context) {
   /**@type {vscode.Disposable} */
   let clear = null;
 
+  const output = vscode.window.createOutputChannel("err4go-logger");
+  context.subscriptions.push(output);
+
+  let loggerEabled = false;
+  const cmd = vscode.commands.registerCommand("err4go.logger.switch", () => {
+    let enabled = loggerEabled;
+    loggerEabled = !loggerEabled;
+    if (!enabled) {
+      output.appendLine("logger is started");
+      output.show();
+      return;
+    }
+    output.appendLine("logger is stopped");
+  });
+  context.subscriptions.push(cmd);
+
+  output.appendLine("click the bottom right err4go item to switch logger.");
+  const loggerStatusText = loggerEabled ? "started" : "stopped";
+  output.appendLine(`the logger status is ${loggerStatusText}`);
+
   let bar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100
   );
   bar.text = "err4go";
+  bar.command = "err4go.logger.switch";
   context.subscriptions.push(bar);
 
   let running = false;
@@ -80,14 +101,20 @@ function activate(context) {
             if (res.status != 200) {
               throw new Error(await res.text());
             }
+            if (loggerEabled) {
+              output.appendLine(`ok ${await res.text()} ${doc.fileName}`);
+            }
           }
         );
-        p.catch((err) => {
-          console.error(err);
-        });
         return p;
       };
-      e.waitUntil(transpile());
+      const r = transpile().catch((err) => {
+        if (loggerEabled) {
+          console.error(err);
+          output.appendLine(err);
+        }
+      });
+      e.waitUntil(r);
     }
     let handler = vscode.workspace.onWillSaveTextDocument(onSave);
 
