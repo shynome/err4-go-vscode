@@ -30,7 +30,7 @@ func main() {
 		filepath := r.URL.Path
 		defer err2.Catch(func(err error) {
 			w.WriteHeader(500)
-			fmt.Fprintln(w, "err", err)
+			fmt.Fprint(w, "err ", err)
 		})
 		if args.debug {
 			log.Println("ransform file", filepath)
@@ -39,12 +39,12 @@ func main() {
 		b, err4file, err := transpile.Transform(filepath, r.Body)
 		if err == nil && !err4file {
 			_ = os.Remove(p)
-			fmt.Fprintln(w, "removed")
+			fmt.Fprint(w, "removed")
 			return
 		}
 		try.To(os.WriteFile(p, b.Bytes(), os.ModePerm))
 		try.To(err)
-		fmt.Fprintln(w, "saved")
+		fmt.Fprint(w, "saved")
 	})
 
 	if err := http.ListenAndServe(args.addr, nil); err != nil {
